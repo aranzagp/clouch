@@ -3,9 +3,9 @@ package db
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 type response struct {
@@ -14,7 +14,13 @@ type response struct {
 
 func CreateDatabase(dbname, host string) error {
 
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s", host, dbname), nil)
+	url, err := url.Parse(host)
+	if err != nil {
+		return err
+	}
+
+	url.Path = dbname
+	req, err := http.NewRequest("PUT", url.String(), nil)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -46,8 +52,15 @@ func CreateDatabase(dbname, host string) error {
 }
 
 func DeleteDatabase(dbname, host string) error {
-	fmt.Print(fmt.Sprintf("URL %s", host))
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s", host, dbname), nil)
+
+	url, err := url.Parse(host)
+	if err != nil {
+		return err
+	}
+
+	url.Path = dbname
+
+	req, err := http.NewRequest("DELETE", url.String(), nil)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
