@@ -8,19 +8,36 @@ import (
 	"net/url"
 )
 
+type DB struct {
+	host   string
+	dbname string
+	url    url.URL
+}
+
+func New(host, dbname string) (*DB, error) {
+	url, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
+
+	url.Path = dbname
+
+	db := DB{
+		host:   host,
+		dbname: dbname,
+		url:    *url,
+	}
+
+	return &db, nil
+}
+
 type response struct {
 	Ok bool `json:"ok"`
 }
 
-func CreateDatabase(dbname, host string) error {
+func (db DB) CreateDatabase() error {
 
-	url, err := url.Parse(host)
-	if err != nil {
-		return err
-	}
-
-	url.Path = dbname
-	req, err := http.NewRequest("PUT", url.String(), nil)
+	req, err := http.NewRequest("PUT", db.url.String(), nil)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -51,16 +68,9 @@ func CreateDatabase(dbname, host string) error {
 	return nil
 }
 
-func DeleteDatabase(dbname, host string) error {
+func (db DB) DeleteDatabase() error {
 
-	url, err := url.Parse(host)
-	if err != nil {
-		return err
-	}
-
-	url.Path = dbname
-
-	req, err := http.NewRequest("DELETE", url.String(), nil)
+	req, err := http.NewRequest("DELETE", db.url.String(), nil)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -84,4 +94,8 @@ func DeleteDatabase(dbname, host string) error {
 	}
 
 	return nil
+}
+
+func (db DB) URL() string {
+	return db.url.String()
 }

@@ -14,21 +14,39 @@ import (
 )
 
 var _ = Describe("Db", func() {
+
+	var (
+		db     *DB
+		dbname string
+		host   string
+	)
+
+	BeforeSuite(func() {
+		fake, _ := faker.New("en")
+		dbname = fake.Words(1, false)[0]
+		host = "http://127.0.0.1:5984/"
+		db, _ = New(host, dbname)
+	})
+
+	Describe("Test Helper methods", func() {
+		It("Should return the correct URL", func() {
+			Ω(db.URL()).Should(Equal(host + dbname))
+		})
+	})
+
 	Describe("Create a new Database", func() {
 		It("Should create and return no errors", func() {
-			fake, _ := faker.New("en")
-			name := fake.Words(1, false)[0]
-			host := "http://127.0.0.1:5984/"
-			err := CreateDatabase(name, host)
+
+			err := db.CreateDatabase()
 			Ω(err).ShouldNot(HaveOccurred())
 
 			dbs, err := getDatabases(host)
 
 			Ω(err).ShouldNot(HaveOccurred())
 
-			Ω(dbs).Should(ContainElement(name))
+			Ω(dbs).Should(ContainElement(dbname))
 
-			err = DeleteDatabase(name, host)
+			err = db.DeleteDatabase()
 
 			Ω(err).ShouldNot(HaveOccurred())
 
