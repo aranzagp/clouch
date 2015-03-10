@@ -1,11 +1,13 @@
 package db
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"reflect"
 )
 
 type DB struct {
@@ -29,10 +31,6 @@ func New(host, dbname string) (*DB, error) {
 	}
 
 	return &db, nil
-}
-
-type response struct {
-	Ok bool `json:"ok"`
 }
 
 func (db DB) CreateDatabase() error {
@@ -83,6 +81,7 @@ func (db DB) DeleteDatabase() error {
 	if err != nil {
 		return err
 	}
+
 	res := response{}
 	err = json.Unmarshal(body, &res)
 	if err != nil {
@@ -98,4 +97,50 @@ func (db DB) DeleteDatabase() error {
 
 func (db DB) URL() string {
 	return db.url.String()
+}
+
+func (db DB) Create(v interface{}) error {
+	payloadBytes, err := json.Marshal(v)
+
+	req, err := http.NewRequest("POST", db.url.String(), bytes.NewBuffer(payloadBytes))
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	res := documentResponse{}
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		return err
+	}
+	revs := []string{res.Rev}
+	revsVal := reflect.ValueOf(revs)
+
+	if !res.Ok {
+		return errors.New("Cannot create document")
+	}
+
+	reflect.ValueOf(v).Elem().FieldByName("ID").SetString(res.ID)
+	reflect.ValueOf(v).Elem().FieldByName("Revs").Set(revsVal)
+
+	return nil
+}
+
+func (db DB) Read() {
+
+}
+func (db DB) Update() {
+
+}
+func (db DB) Delete() {
+
 }

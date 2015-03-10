@@ -21,7 +21,7 @@ var _ = Describe("Db", func() {
 		host   string
 	)
 
-	BeforeSuite(func() {
+	BeforeEach(func() {
 		fake, _ := faker.New("en")
 		dbname = fake.Words(1, false)[0]
 		host = "http://127.0.0.1:5984/"
@@ -50,6 +50,31 @@ var _ = Describe("Db", func() {
 
 			Ω(err).ShouldNot(HaveOccurred())
 
+		})
+	})
+
+	Describe("Create a new document", func() {
+		type document struct {
+			ID    string
+			Revs  []string
+			Hello string
+		}
+
+		It("Should return an struct with an id, and rev filled", func() {
+			err := db.CreateDatabase()
+			Ω(err).ShouldNot(HaveOccurred())
+
+			dbs, err := getDatabases(host)
+			Ω(err).ShouldNot(HaveOccurred())
+
+			Ω(dbs).Should(ContainElement(dbname))
+
+			doc := document{Hello: "World"}
+			err = db.Create(&doc)
+			Ω(err).ShouldNot(HaveOccurred())
+
+			err = db.DeleteDatabase()
+			Ω(err).ShouldNot(HaveOccurred())
 		})
 	})
 })
