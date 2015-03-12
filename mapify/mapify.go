@@ -20,9 +20,17 @@ func Do(v interface{}) (map[string]interface{}, error) {
 	}
 
 	res := map[string]interface{}{}
+	vValues := reflect.ValueOf(v).Elem()
+
 	for i := 0; i < values.NumField(); i++ {
 		val := values.Field(i)
-		res[val.Name] = reflect.ValueOf(v).Elem().FieldByName(val.Name).Interface()
+
+		if val.Type.Kind() == reflect.Ptr {
+			res[val.Name] = vValues.FieldByName(val.Name).Elem().Interface()
+		} else {
+			res[val.Name] = vValues.FieldByName(val.Name).Interface()
+		}
+
 	}
 	return res, nil
 }
