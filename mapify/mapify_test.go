@@ -81,11 +81,6 @@ var _ = Describe("Mapify", func() {
 				})
 			})
 
-			Context("Test with a struct with nil and not-nil pointer values", func() {
-				It("Should return a map of of the necessaty values", func() {
-				})
-			})
-
 		})
 	})
 })
