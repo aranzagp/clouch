@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	NotAStruct = errors.New("Unsupported. Not a struct")
+	ErrNotAStruct = errors.New("Unsupported. Not a struct")
 )
 
 func Do(v interface{}) (map[string]interface{}, error) {
@@ -15,7 +15,7 @@ func Do(v interface{}) (map[string]interface{}, error) {
 
 	if values.Kind() != reflect.Struct {
 		fmt.Println(values.Kind())
-		return nil, NotAStruct
+		return nil, ErrNotAStruct
 
 	}
 
@@ -26,7 +26,12 @@ func Do(v interface{}) (map[string]interface{}, error) {
 		val := values.Field(i)
 
 		if val.Type.Kind() == reflect.Ptr {
-			res[val.Name] = vValues.FieldByName(val.Name).Elem().Interface()
+			if p := vValues.FieldByName(val.Name).Pointer(); p == 0 {
+				res[val.Name] = nil
+			} else {
+				res[val.Name] = vValues.FieldByName(val.Name).Elem().Interface()
+
+			}
 		} else {
 			res[val.Name] = vValues.FieldByName(val.Name).Interface()
 		}
