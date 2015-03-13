@@ -80,6 +80,35 @@ var _ = Describe("Mapify", func() {
 					Ω(testA["Num"]).Should(BeNil())
 				})
 			})
+			Context("Test with a struct with a struct inside", func() {
+				testA := TestA{
+					ID:    "1",
+					Revs:  []string{"1234"},
+					Hello: "World",
+				}
+
+				testC := TestC{
+					ID:    "1234",
+					Revs:  []string{"1234"},
+					TestA: testA,
+				}
+				It("Should return a nested map with correct values", func() {
+					test, err := Do(&testC)
+					Ω(err).Should(BeNil())
+
+					var revs interface{} = []string{"1234"}
+					var id interface{} = "1"
+					var id2 interface{} = "1234"
+
+					Ω(test).Should(HaveKeyWithValue("ID", id2))
+					Ω(test).Should(HaveKeyWithValue("Revs", revs))
+
+					Ω(test).Should(HaveKey("TestA"))
+					Ω(test["TestA"]).Should(HaveKeyWithValue("Revs", revs))
+					Ω(test["TestA"]).Should(HaveKeyWithValue("ID", id))
+
+				})
+			})
 
 		})
 	})
@@ -97,4 +126,10 @@ type TestB struct {
 	Hello string
 	Foo   *string
 	Num   *int
+}
+
+type TestC struct {
+	ID    string
+	Revs  []string
+	TestA TestA
 }

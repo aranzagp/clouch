@@ -11,10 +11,10 @@ var (
 )
 
 func Do(v interface{}) (map[string]interface{}, error) {
-	values := reflect.TypeOf(v).Elem()
+	typ := reflect.TypeOf(v).Elem()
 
-	if values.Kind() != reflect.Struct {
-		fmt.Println(values.Kind())
+	if typ.Kind() != reflect.Struct {
+		fmt.Println(typ.Kind())
 		return nil, ErrNotAStruct
 
 	}
@@ -22,20 +22,48 @@ func Do(v interface{}) (map[string]interface{}, error) {
 	res := map[string]interface{}{}
 	vValues := reflect.ValueOf(v).Elem()
 
-	for i := 0; i < values.NumField(); i++ {
-		val := values.Field(i)
+	for i := 0; i < typ.NumField(); i++ {
+		tp := typ.Field(i)
 
-		if val.Type.Kind() == reflect.Ptr {
-			if p := vValues.FieldByName(val.Name).Pointer(); p == 0 {
-				res[val.Name] = nil
+		if tp.Type.Kind() == reflect.Struct {
+
+			r, err := getStructFields(vValues.Field(i))
+			if err != nil {
+				return nil, err
+			}
+
+			res[tp.Name] = r
+			continue
+		}
+
+		if tp.Type.Kind() == reflect.Ptr {
+			if p := vValues.FieldByName(tp.Name).Pointer(); p == 0 {
+				res[tp.Name] = nil
 			} else {
-				res[val.Name] = vValues.FieldByName(val.Name).Elem().Interface()
+				res[tp.Name] = vValues.FieldByName(tp.Name).Elem().Interface()
 
 			}
 		} else {
-			res[val.Name] = vValues.FieldByName(val.Name).Interface()
+			res[tp.Name] = vValues.FieldByName(tp.Name).Interface()
 		}
 
 	}
+	return res, nil
+}
+
+func getStructFields(value reflect.Value) (map[string]interface{}, error) {
+	if value.Kind() != reflect.Struct {
+		return nil, ErrNotAStruct
+	}
+
+	res := map[string]interface{}{}
+	typ := value.Type()
+	for i := 0; i < value.NumField(); i++ {
+		val := value.Field(i)
+		tp := typ.Field(i)
+		res[tp.Name] = val.Interface()
+
+	}
+
 	return res, nil
 }
