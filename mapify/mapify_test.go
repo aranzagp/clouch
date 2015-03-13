@@ -142,6 +142,44 @@ var _ = Describe("Mapify", func() {
 				})
 			})
 
+			Context("Test with inception structs", func() {
+				testA := TestA{
+					ID:    "1",
+					Revs:  []string{"1234"},
+					Hello: "World",
+				}
+
+				testD := TestD{
+					ID:    "1234",
+					Revs:  []string{"1234"},
+					TestA: &testA,
+				}
+
+				testE := TestE{
+					ID:    "1234",
+					Revs:  []string{"1234"},
+					TestD: testD,
+				}
+				It("Should return a nested map with correct values", func() {
+					test, err := Do(&testE)
+					Ω(err).Should(BeNil())
+
+					var revs interface{} = []string{"1234"}
+					var id2 interface{} = "1234"
+
+					Ω(test).Should(HaveKeyWithValue("ID", id2))
+					Ω(test).Should(HaveKeyWithValue("Revs", revs))
+
+					Ω(test).Should(HaveKey("TestD"))
+					Ω(test["TestD"]).Should(HaveKeyWithValue("Revs", revs))
+					Ω(test["TestD"]).Should(HaveKeyWithValue("ID", id2))
+
+					Ω(test["TestD"]).Should(HaveKey("TestA"))
+
+				})
+
+			})
+
 		})
 	})
 })
@@ -170,4 +208,10 @@ type TestD struct {
 	ID    string
 	Revs  []string
 	TestA *TestA
+}
+
+type TestE struct {
+	ID    string
+	Revs  []string
+	TestD TestD
 }
