@@ -19,35 +19,14 @@ func Do(v interface{}) (map[string]interface{}, error) {
 
 	}
 
-	res := map[string]interface{}{}
-	vValues := reflect.ValueOf(v).Elem()
+	// TODO: Validate we receive a pointer
 
-	for i := 0; i < typ.NumField(); i++ {
-		tp := typ.Field(i)
-
-		if tp.Type.Kind() == reflect.Struct {
-
-			r, err := getStructFields(vValues.Field(i))
-			if err != nil {
-				return nil, err
-			}
-
-			res[tp.Name] = r
-			continue
-		}
-
-		if tp.Type.Kind() == reflect.Ptr {
-			if p := vValues.FieldByName(tp.Name).Pointer(); p == 0 {
-				res[tp.Name] = nil
-			} else {
-				res[tp.Name] = vValues.FieldByName(tp.Name).Elem().Interface()
-
-			}
-		} else {
-			res[tp.Name] = vValues.FieldByName(tp.Name).Interface()
-		}
-
+	value := reflect.ValueOf(v).Elem()
+	res, err := getStructFields(value)
+	if err != nil {
+		return nil, err
 	}
+
 	return res, nil
 }
 
@@ -59,8 +38,30 @@ func getStructFields(value reflect.Value) (map[string]interface{}, error) {
 	res := map[string]interface{}{}
 	typ := value.Type()
 	for i := 0; i < value.NumField(); i++ {
+
 		val := value.Field(i)
 		tp := typ.Field(i)
+
+		if tp.Type.Kind() == reflect.Ptr {
+			if p := val.Pointer(); p == 0 {
+				res[tp.Name] = nil
+				continue
+			}
+
+			val = val.Elem()
+		}
+
+		if val.Kind() == reflect.Struct {
+
+			r, err := getStructFields(val)
+			if err != nil {
+				return nil, err
+			}
+
+			res[tp.Name] = r
+			continue
+		}
+
 		res[tp.Name] = val.Interface()
 
 	}
