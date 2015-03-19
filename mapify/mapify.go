@@ -8,6 +8,7 @@ import (
 
 var (
 	ErrNotAStruct = errors.New("Unsupported. Not a struct")
+	clouch        = "clouch"
 )
 
 func Do(v interface{}) (map[string]interface{}, error) {
@@ -42,9 +43,37 @@ func getStructFields(value reflect.Value) (map[string]interface{}, error) {
 		val := value.Field(i)
 		tp := typ.Field(i)
 
+		name := ""
+		tagField := tp.Tag.Get(clouch)
+
+		tg := getTag(tagField)
+
+		if tagField != tg.name {
+			name = tagField
+		} else {
+			name = tp.Name
+		}
+
+		if tg.Ignore() {
+			continue
+		}
+
+		if tg.name == "_id" {
+			continue
+		}
+
+		if tg.name == "_revs" {
+			name = "_rev"
+		}
+
 		if tp.Type.Kind() == reflect.Ptr {
 			if p := val.Pointer(); p == 0 {
-				res[tp.Name] = nil
+
+				if tg.OmitEmpty() {
+					continue
+				}
+
+				res[name] = nil
 				continue
 			}
 
@@ -58,11 +87,11 @@ func getStructFields(value reflect.Value) (map[string]interface{}, error) {
 				return nil, err
 			}
 
-			res[tp.Name] = r
+			res[name] = r
 			continue
 		}
 
-		res[tp.Name] = val.Interface()
+		res[name] = val.Interface()
 
 	}
 

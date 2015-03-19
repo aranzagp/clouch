@@ -182,36 +182,23 @@ var _ = Describe("Mapify", func() {
 
 		})
 	})
+
+	Describe("Using tags", func() {
+
+		Context("Using some tags", func() {
+			testF := TestF{
+				DocID:    "1",
+				Revision: []string{"123"},
+			}
+			It("Should apply the clouch tags", func() {
+				test, err := Do(&testF)
+				Ω(err).Should(BeNil())
+
+				Ω(test).Should(HaveKey("_rev"))
+				Ω(test).ShouldNot(HaveKey("_id"))
+
+			})
+		})
+	})
+
 })
-
-type TestA struct {
-	ID    string
-	Revs  []string
-	Hello string
-}
-
-type TestB struct {
-	ID    string
-	Revs  []string
-	Hello string
-	Foo   *string
-	Num   *int
-}
-
-type TestC struct {
-	ID    string
-	Revs  []string
-	TestA TestA
-}
-
-type TestD struct {
-	ID    string
-	Revs  []string
-	TestA *TestA
-}
-
-type TestE struct {
-	ID    string
-	Revs  []string
-	TestD TestD
-}
