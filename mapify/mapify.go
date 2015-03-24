@@ -2,7 +2,6 @@ package mapify
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 )
 
@@ -14,16 +13,13 @@ var (
 func Do(v interface{}) (map[string]interface{}, error) {
 	typ := reflect.TypeOf(v).Elem()
 
-	if typ.Kind() != reflect.Struct {
-		fmt.Println(typ.Kind())
+	if !isStruct(typ) {
 		return nil, ErrNotAStruct
-
 	}
-
 	// TODO: Validate we receive a pointer
 
 	value := reflect.ValueOf(v).Elem()
-	res, err := getStructFields(value)
+	res, err := getStructFields(value, true)
 	if err != nil {
 		return nil, err
 	}
@@ -31,14 +27,23 @@ func Do(v interface{}) (map[string]interface{}, error) {
 	return res, nil
 }
 
-func getStructFields(value reflect.Value) (map[string]interface{}, error) {
+func getStructFields(value reflect.Value, level bool) (map[string]interface{}, error) {
 	if value.Kind() != reflect.Struct {
 		return nil, ErrNotAStruct
 	}
 
 	res := map[string]interface{}{}
 	typ := value.Type()
+
+	idNum, err := idTagExists(typ)
+	if err != nil {
+		return nil, err
+	}
+
 	for i := 0; i < value.NumField(); i++ {
+		if idNum == i && level {
+			continue
+		}
 
 		val := value.Field(i)
 		tp := typ.Field(i)
@@ -55,10 +60,6 @@ func getStructFields(value reflect.Value) (map[string]interface{}, error) {
 		}
 
 		if tg.Ignore() {
-			continue
-		}
-
-		if tg.name == "_id" {
 			continue
 		}
 
@@ -82,7 +83,7 @@ func getStructFields(value reflect.Value) (map[string]interface{}, error) {
 
 		if val.Kind() == reflect.Struct {
 
-			r, err := getStructFields(val)
+			r, err := getStructFields(val, false)
 			if err != nil {
 				return nil, err
 			}

@@ -21,9 +21,7 @@ var _ = Describe("Mapify", func() {
 
 				var world interface{} = "World"
 				var revs interface{} = []string{"1234"}
-				var id interface{} = "1"
 
-				Ω(testA).Should(HaveKeyWithValue("ID", id))
 				Ω(testA).Should(HaveKeyWithValue("Hello", world))
 				Ω(testA).Should(HaveKeyWithValue("Revs", revs))
 			})
@@ -44,11 +42,9 @@ var _ = Describe("Mapify", func() {
 
 					var world interface{} = "World"
 					var revs interface{} = []string{"1234"}
-					var id interface{} = "1"
 					var foo interface{} = bar
 					var num interface{} = 1
 
-					Ω(testA).Should(HaveKeyWithValue("ID", id))
 					Ω(testA).Should(HaveKeyWithValue("Hello", world))
 					Ω(testA).Should(HaveKeyWithValue("Revs", revs))
 					Ω(testA).Should(HaveKeyWithValue("Foo", foo))
@@ -70,10 +66,8 @@ var _ = Describe("Mapify", func() {
 
 					var world interface{} = "World"
 					var revs interface{} = []string{"1234"}
-					var id interface{} = "1"
 					var foo interface{} = bar
 
-					Ω(testA).Should(HaveKeyWithValue("ID", id))
 					Ω(testA).Should(HaveKeyWithValue("Hello", world))
 					Ω(testA).Should(HaveKeyWithValue("Revs", revs))
 					Ω(testA).Should(HaveKeyWithValue("Foo", foo))
@@ -100,9 +94,7 @@ var _ = Describe("Mapify", func() {
 
 					var revs interface{} = []string{"1234"}
 					var id interface{} = "1"
-					var id2 interface{} = "1234"
 
-					Ω(test).Should(HaveKeyWithValue("ID", id2))
 					Ω(test).Should(HaveKeyWithValue("Revs", revs))
 
 					Ω(test).Should(HaveKey("TestA"))
@@ -130,9 +122,7 @@ var _ = Describe("Mapify", func() {
 
 					var revs interface{} = []string{"1234"}
 					var id interface{} = "1"
-					var id2 interface{} = "1234"
 
-					Ω(test).Should(HaveKeyWithValue("ID", id2))
 					Ω(test).Should(HaveKeyWithValue("Revs", revs))
 
 					Ω(test).Should(HaveKey("TestA"))
@@ -167,7 +157,6 @@ var _ = Describe("Mapify", func() {
 					var revs interface{} = []string{"1234"}
 					var id2 interface{} = "1234"
 
-					Ω(test).Should(HaveKeyWithValue("ID", id2))
 					Ω(test).Should(HaveKeyWithValue("Revs", revs))
 
 					Ω(test).Should(HaveKey("TestD"))
