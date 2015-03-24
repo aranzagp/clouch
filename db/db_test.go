@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	. "github.com/clouch/db"
+	. "github.com/thetonymaster/clouch/db"
 
 	"github.com/manveru/faker"
 	. "github.com/onsi/ginkgo"

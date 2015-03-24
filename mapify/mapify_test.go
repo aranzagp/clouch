@@ -1,7 +1,7 @@
 package mapify_test
 
 import (
-	. "github.com/clouch/mapify"
+	. "github.com/thetonymaster/clouch/mapify"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
