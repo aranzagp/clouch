@@ -8,7 +8,27 @@ import (
 )
 
 var _ = Describe("Mapify", func() {
+
 	Describe("Convert a struct to a map", func() {
+
+		Context("Struct with zero revisions", func() {
+			test := TestA{
+				ID:    "1",
+				Hello: "World",
+			}
+
+			It("_rev field should not exist", func() {
+				testA, err := Do(&test)
+				Ω(err).Should(BeNil())
+
+				var world interface{} = "World"
+
+				Ω(testA).Should(HaveKeyWithValue("Hello", world))
+				Ω(testA).ShouldNot(HaveKey("_rev"))
+
+			})
+		})
+
 		Context("Without pointer values", func() {
 			test := TestA{
 				ID:    "1",

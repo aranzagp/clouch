@@ -74,6 +74,9 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 				return nil, errors.New("Revs is not an array")
 			}
 
+			if val.Len() < 1 {
+				continue
+			}
 			rev := val.Index(0)
 			res["_rev"] = rev.Interface()
 			continue
