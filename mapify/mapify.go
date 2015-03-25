@@ -40,7 +40,13 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 		return nil, err
 	}
 
+	revNum, err := revTagExists(typ)
+	if err != nil {
+		return nil, err
+	}
+
 	for i := 0; i < value.NumField(); i++ {
+
 		if idNum == i && level {
 			continue
 		}
@@ -63,8 +69,14 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 			continue
 		}
 
-		if tg.name == "_revs" {
-			name = "_rev"
+		if revNum == i && level {
+			if val.Kind() != reflect.Slice {
+				return nil, errors.New("Revs is not an array")
+			}
+
+			rev := val.Index(0)
+			res["_rev"] = rev.Interface()
+			continue
 		}
 
 		if tp.Type.Kind() == reflect.Ptr {

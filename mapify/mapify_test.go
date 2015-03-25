@@ -20,10 +20,10 @@ var _ = Describe("Mapify", func() {
 				Ω(err).Should(BeNil())
 
 				var world interface{} = "World"
-				var revs interface{} = []string{"1234"}
+				var rev interface{} = "1234"
 
 				Ω(testA).Should(HaveKeyWithValue("Hello", world))
-				Ω(testA).Should(HaveKeyWithValue("Revs", revs))
+				Ω(testA).Should(HaveKeyWithValue("_rev", rev))
 			})
 
 			Context("Test with a struct with pointer values", func() {
@@ -41,12 +41,12 @@ var _ = Describe("Mapify", func() {
 					Ω(err).Should(BeNil())
 
 					var world interface{} = "World"
-					var revs interface{} = []string{"1234"}
+					var rev interface{} = "1234"
 					var foo interface{} = bar
 					var num interface{} = 1
 
 					Ω(testA).Should(HaveKeyWithValue("Hello", world))
-					Ω(testA).Should(HaveKeyWithValue("Revs", revs))
+					Ω(testA).Should(HaveKeyWithValue("_rev", rev))
 					Ω(testA).Should(HaveKeyWithValue("Foo", foo))
 					Ω(testA).Should(HaveKeyWithValue("Num", num))
 				})
@@ -65,11 +65,11 @@ var _ = Describe("Mapify", func() {
 					Ω(err).Should(BeNil())
 
 					var world interface{} = "World"
-					var revs interface{} = []string{"1234"}
+					var rev interface{} = "1234"
 					var foo interface{} = bar
 
 					Ω(testA).Should(HaveKeyWithValue("Hello", world))
-					Ω(testA).Should(HaveKeyWithValue("Revs", revs))
+					Ω(testA).Should(HaveKeyWithValue("_rev", rev))
 					Ω(testA).Should(HaveKeyWithValue("Foo", foo))
 					Ω(testA).Should(HaveKey("Num"))
 					Ω(testA["Num"]).Should(BeNil())
@@ -93,9 +93,10 @@ var _ = Describe("Mapify", func() {
 					Ω(err).Should(BeNil())
 
 					var revs interface{} = []string{"1234"}
+					var rev interface{} = "1234"
 					var id interface{} = "1"
 
-					Ω(test).Should(HaveKeyWithValue("Revs", revs))
+					Ω(test).Should(HaveKeyWithValue("_rev", rev))
 
 					Ω(test).Should(HaveKey("TestA"))
 					Ω(test["TestA"]).Should(HaveKeyWithValue("Revs", revs))
@@ -121,9 +122,10 @@ var _ = Describe("Mapify", func() {
 					Ω(err).Should(BeNil())
 
 					var revs interface{} = []string{"1234"}
+					var rev interface{} = "1234"
 					var id interface{} = "1"
 
-					Ω(test).Should(HaveKeyWithValue("Revs", revs))
+					Ω(test).Should(HaveKeyWithValue("_rev", rev))
 
 					Ω(test).Should(HaveKey("TestA"))
 					Ω(test["TestA"]).Should(HaveKeyWithValue("Revs", revs))
@@ -155,9 +157,10 @@ var _ = Describe("Mapify", func() {
 					Ω(err).Should(BeNil())
 
 					var revs interface{} = []string{"1234"}
+					var rev interface{} = "1234"
 					var id2 interface{} = "1234"
 
-					Ω(test).Should(HaveKeyWithValue("Revs", revs))
+					Ω(test).Should(HaveKeyWithValue("_rev", rev))
 
 					Ω(test).Should(HaveKey("TestD"))
 					Ω(test["TestD"]).Should(HaveKeyWithValue("Revs", revs))
