@@ -64,3 +64,18 @@ func isStruct(typ reflect.Type) bool {
 	}
 	return true
 }
+
+func GetID(v interface{}) (string, error) {
+	typ := reflect.TypeOf(v).Elem()
+
+	if !isStruct(typ) {
+		return "", ErrNotAStruct
+	}
+
+	num, err := idTagExists(typ)
+	if err != nil {
+		return "", err
+	}
+	id := reflect.ValueOf(v).Elem().Field(num).String()
+	return id, nil
+}

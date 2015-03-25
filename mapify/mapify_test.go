@@ -196,7 +196,6 @@ var _ = Describe("Mapify", func() {
 	})
 
 	Describe("Using tags", func() {
-
 		Context("Using some tags", func() {
 			testF := TestF{
 				DocID:    "1",
@@ -207,8 +206,38 @@ var _ = Describe("Mapify", func() {
 				Ω(err).Should(BeNil())
 
 				Ω(test).Should(HaveKey("_rev"))
+				Ω(test).ShouldNot(HaveKey("DocID"))
 				Ω(test).ShouldNot(HaveKey("_id"))
 
+			})
+		})
+	})
+
+	Describe("Get ID from a struct", func() {
+
+		Context("With an ID set", func() {
+			test := TestA{
+				ID:    "1",
+				Hello: "World",
+			}
+			It("Should return an id", func() {
+				id, err := GetID(&test)
+
+				Ω(err).Should(BeNil())
+				Ω(id).Should(Equal(test.ID))
+			})
+		})
+
+		Context("With a tag set", func() {
+			test := TestF{
+				DocID:    "1",
+				Revision: []string{"123"},
+			}
+			It("Should return an id", func() {
+				id, err := GetID(&test)
+
+				Ω(err).Should(BeNil())
+				Ω(id).Should(Equal(test.DocID))
 			})
 		})
 	})
