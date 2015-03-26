@@ -3,6 +3,8 @@ package mapify_test
 import (
 	. "github.com/thetonymaster/clouch/mapify"
 
+	ts "github.com/thetonymaster/clouch/teststructs"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -12,25 +14,27 @@ var _ = Describe("Mapify", func() {
 	Describe("Convert a struct to a map", func() {
 
 		Context("Struct with zero revisions", func() {
-			test := TestA{
+			test := &ts.TestA{
 				ID:    "1",
 				Hello: "World",
 			}
 
 			It("_rev field should not exist", func() {
-				testA, err := Do(&test)
+				testA, err := Do(test)
 				Ω(err).Should(BeNil())
 
 				var world interface{} = "World"
 
 				Ω(testA).Should(HaveKeyWithValue("Hello", world))
 				Ω(testA).ShouldNot(HaveKey("_rev"))
+				Ω(testA).ShouldNot(HaveKey("Revs"))
+				Ω(testA).ShouldNot(HaveKey("ID"))
 
 			})
 		})
 
 		Context("Without pointer values", func() {
-			test := TestA{
+			test := ts.TestA{
 				ID:    "1",
 				Revs:  []string{"1234"},
 				Hello: "World",
@@ -49,7 +53,7 @@ var _ = Describe("Mapify", func() {
 			Context("Test with a struct with pointer values", func() {
 				bar := "Bar"
 				num := 1
-				test := TestB{
+				test := ts.TestB{
 					ID:    "1",
 					Revs:  []string{"1234"},
 					Hello: "World",
@@ -74,7 +78,7 @@ var _ = Describe("Mapify", func() {
 
 			Context("Test with a struct with nil pointer values", func() {
 				bar := "Bar"
-				test := TestB{
+				test := ts.TestB{
 					ID:    "1",
 					Revs:  []string{"1234"},
 					Hello: "World",
@@ -97,13 +101,13 @@ var _ = Describe("Mapify", func() {
 			})
 
 			Context("Test with a struct with a struct inside", func() {
-				testA := TestA{
+				testA := ts.TestA{
 					ID:    "1",
 					Revs:  []string{"1234"},
 					Hello: "World",
 				}
 
-				testC := TestC{
+				testC := ts.TestC{
 					ID:    "1234",
 					Revs:  []string{"1234"},
 					TestA: testA,
@@ -126,13 +130,13 @@ var _ = Describe("Mapify", func() {
 			})
 
 			Context("Test with a struct with a pointer struct inside", func() {
-				testA := TestA{
+				testA := ts.TestA{
 					ID:    "1",
 					Revs:  []string{"1234"},
 					Hello: "World",
 				}
 
-				testD := TestD{
+				testD := ts.TestD{
 					ID:    "1234",
 					Revs:  []string{"1234"},
 					TestA: &testA,
@@ -155,19 +159,19 @@ var _ = Describe("Mapify", func() {
 			})
 
 			Context("Test with inception structs", func() {
-				testA := TestA{
+				testA := ts.TestA{
 					ID:    "1",
 					Revs:  []string{"1234"},
 					Hello: "World",
 				}
 
-				testD := TestD{
+				testD := ts.TestD{
 					ID:    "1234",
 					Revs:  []string{"1234"},
 					TestA: &testA,
 				}
 
-				testE := TestE{
+				testE := ts.TestE{
 					ID:    "1234",
 					Revs:  []string{"1234"},
 					TestD: testD,
@@ -197,7 +201,7 @@ var _ = Describe("Mapify", func() {
 
 	Describe("Using tags", func() {
 		Context("Using some tags", func() {
-			testF := TestF{
+			testF := ts.TestF{
 				DocID:    "1",
 				Revision: []string{"123"},
 			}
@@ -216,7 +220,7 @@ var _ = Describe("Mapify", func() {
 	Describe("Get ID from a struct", func() {
 
 		Context("With an ID set", func() {
-			test := TestA{
+			test := ts.TestA{
 				ID:    "1",
 				Hello: "World",
 			}
@@ -229,7 +233,7 @@ var _ = Describe("Mapify", func() {
 		})
 
 		Context("With a tag set", func() {
-			test := TestF{
+			test := ts.TestF{
 				DocID:    "1",
 				Revision: []string{"123"},
 			}

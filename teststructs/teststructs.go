@@ -1,4 +1,4 @@
-package mapify_test
+package teststructs
 
 type TestA struct {
 	ID    string
