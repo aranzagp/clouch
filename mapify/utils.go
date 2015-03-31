@@ -1,22 +1,18 @@
 package mapify
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strings"
-)
 
-var (
-	errNoID   = errors.New("No ID tag Found")
-	errNoRevs = errors.New("No Rev tag Found")
+	"github.com/thetonymaster/clouch/utils"
 )
 
 func idTagExists(typ reflect.Type) (int, error) {
 	for i := 0; i < typ.NumField(); i++ {
 		strTag := typ.Field(i).Tag.Get(clouch)
-		tg := getTag(strTag)
-		if tg.name == "_id" {
+		tg := utils.GetTag(strTag)
+		if tg.Name == "_id" {
 			return i, nil
 		}
 	}
@@ -31,14 +27,14 @@ func idTagExists(typ reflect.Type) (int, error) {
 
 	}
 
-	return 0, errNoID
+	return 0, utils.ErrNoID
 }
 
 func revTagExists(typ reflect.Type) (int, error) {
 	for i := 0; i < typ.NumField(); i++ {
 		strTag := typ.Field(i).Tag.Get(clouch)
-		tg := getTag(strTag)
-		if tg.name == "_revs" {
+		tg := utils.GetTag(strTag)
+		if tg.Name == "_revs" {
 			return i, nil
 		}
 	}
@@ -52,7 +48,7 @@ func revTagExists(typ reflect.Type) (int, error) {
 		}
 	}
 
-	return 0, errNoRevs
+	return 0, utils.ErrNoRevs
 }
 
 func isStruct(typ reflect.Type) bool {

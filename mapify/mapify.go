@@ -3,6 +3,8 @@ package mapify
 import (
 	"errors"
 	"reflect"
+
+	"github.com/thetonymaster/clouch/utils"
 )
 
 var (
@@ -57,9 +59,9 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 		name := ""
 		tagField := tp.Tag.Get(clouch)
 
-		tg := getTag(tagField)
+		tg := utils.GetTag(tagField)
 
-		if tagField != tg.name {
+		if tagField != tg.Name {
 			name = tagField
 		} else {
 			name = tp.Name
