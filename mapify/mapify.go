@@ -86,9 +86,6 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 		if tp.Type.Kind() == reflect.Ptr {
 			if p := val.Pointer(); p == 0 {
 
-				if omitEmpty(tg) {
-					conti
-				}
 				if tg.OmitEmpty() {
 					continue
 				}
