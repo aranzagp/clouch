@@ -1,7 +1,6 @@
 package mapify
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
@@ -51,21 +50,11 @@ func revTagExists(typ reflect.Type) (int, error) {
 	return 0, utils.ErrNoRevs
 }
 
-func isStruct(typ reflect.Type) bool {
-
-	if typ.Kind() != reflect.Struct {
-		fmt.Println(typ.Kind())
-		return false
-
-	}
-	return true
-}
-
 func GetID(v interface{}) (string, error) {
 	typ := reflect.TypeOf(v).Elem()
 
-	if !isStruct(typ) {
-		return "", ErrNotAStruct
+	if !utils.IsStruct(typ) {
+		return "", utils.ErrNotAStruct
 	}
 
 	num, err := idTagExists(typ)

@@ -8,15 +8,14 @@ import (
 )
 
 var (
-	ErrNotAStruct = errors.New("Unsupported. Not a struct")
-	clouch        = "clouch"
+	clouch = "clouch"
 )
 
 func Do(v interface{}) (map[string]interface{}, error) {
 	typ := reflect.TypeOf(v).Elem()
 
-	if !isStruct(typ) {
-		return nil, ErrNotAStruct
+	if !utils.IsStruct(typ) {
+		return nil, utils.ErrNotAStruct
 	}
 	// TODO: Validate we receive a pointer
 
@@ -31,7 +30,7 @@ func Do(v interface{}) (map[string]interface{}, error) {
 
 func getStructFields(value reflect.Value, level bool) (map[string]interface{}, error) {
 	if value.Kind() != reflect.Struct {
-		return nil, ErrNotAStruct
+		return nil, utils.ErrNotAStruct
 	}
 
 	res := map[string]interface{}{}
@@ -87,6 +86,9 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 		if tp.Type.Kind() == reflect.Ptr {
 			if p := val.Pointer(); p == 0 {
 
+				if omitEmpty(tg) {
+					conti
+				}
 				if tg.OmitEmpty() {
 					continue
 				}
