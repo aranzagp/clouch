@@ -1,10 +1,13 @@
 package mapify
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 const (
 	ignore    = "-"
-	omitempty = "omitempty"
+	omitempty = ",omitempty"
 )
 
 type tag struct {
@@ -21,8 +24,10 @@ func (t tag) OmitEmpty() bool {
 }
 
 func getTag(tags string) *tag {
-
+	//fmt.Println(tags)
 	fields := strings.Split(tags, ",")
+	fmt.Println(fields)
+	fmt.Println(len(fields))
 
 	tg := tag{}
 

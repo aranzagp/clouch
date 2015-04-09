@@ -56,17 +56,79 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 
 		name := ""
 		tagField := tp.Tag.Get(clouch)
-
 		tg := getTag(tagField)
 
-		if tagField != tg.name {
-			name = tagField
-		} else {
-			name = tp.Name
+		if tagField != ",omitempty" {
+			if tagField != tg.name {
+				name = tagField
+			} else {
+				name = tp.Name
+			}
 		}
 
 		if tg.Ignore() {
 			continue
+		}
+
+		if tagField == ",omitempty" {
+			name = tp.Name
+			switch {
+
+			case isSlice(i, value):
+				if val.Len() != 0 {
+					res[name] = val.Interface()
+				}
+
+			case isString(i, value):
+				if val.String() != "" {
+					res[name] = val.Interface()
+				}
+
+			case isInt(i, value):
+				if val.Int() != 0 {
+					res[name] = val.Interface()
+				}
+
+			case isFloat(i, value):
+				if val.Float() != 0 {
+					res[name] = val.Float()
+				}
+
+			case isBool(i, value):
+				if val.Bool() {
+					res[name] = val.Bool()
+				}
+
+			case isPtr(i, value):
+				if p := val.Pointer(); p != 0 {
+					res[name] = val.Interface()
+				}
+
+			case val.Kind() == reflect.Struct:
+				r, err := getStructFields(val, false)
+				if err != nil {
+					return nil, err
+				}
+				res[name] = r
+				//continue
+			}
+
+		} else {
+
+			switch {
+			case isPtr(i, value) || isString(i, value) || isSlice(i, value):
+				res[name] = val.Interface()
+
+			case isFloat(i, value):
+				res[name] = val.Float()
+
+			case isInt(i, value):
+				res[name] = val.Int()
+
+			case isBool(i, value):
+				res[name] = val.Bool()
+			}
+
 		}
 
 		if revNum == i && level {
@@ -82,32 +144,21 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 			continue
 		}
 
-		if tp.Type.Kind() == reflect.Ptr {
-			if p := val.Pointer(); p == 0 {
+		// if tp.Type.Kind() == reflect.Ptr {
+		// 	if p := val.Pointer(); p == 0 {
+		//
+		// 		if tg.OmitEmpty() {
+		// 			continue
+		// 		}
+		//
+		// 		res[name] = nil
+		// 		continue
+		// 	}
+		//
+		// 	val = val.Elem()
+		// }
 
-				if tg.OmitEmpty() {
-					continue
-				}
-
-				res[name] = nil
-				continue
-			}
-
-			val = val.Elem()
-		}
-
-		if val.Kind() == reflect.Struct {
-
-			r, err := getStructFields(val, false)
-			if err != nil {
-				return nil, err
-			}
-
-			res[name] = r
-			continue
-		}
-
-		res[name] = val.Interface()
+		//res[name] = val.Interface()
 
 	}
 

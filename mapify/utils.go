@@ -79,3 +79,35 @@ func GetID(v interface{}) (string, error) {
 	id := reflect.ValueOf(v).Elem().Field(num).String()
 	return id, nil
 }
+
+func isString(i int, value reflect.Value) bool {
+	return value.Field(i).Kind() == reflect.String
+}
+
+func isFloat(i int, value reflect.Value) bool {
+	return value.Field(i).Kind() == reflect.Float64
+}
+
+func isSlice(i int, value reflect.Value) bool {
+	return value.Field(i).Kind() == reflect.Slice
+}
+
+func isInt(i int, value reflect.Value) bool {
+	return value.Field(i).Kind() == reflect.Int
+}
+
+func isPtr(i int, value reflect.Value) bool {
+	return value.Field(i).Kind() == reflect.Ptr
+}
+
+func isBool(i int, value reflect.Value) bool {
+	return value.Field(i).Kind() == reflect.Bool
+}
+
+func isMap(i int, value reflect.Value) bool {
+	return value.Field(i).Kind() == reflect.Map
+}
+
+// func isStruct(i int, value reflect.Value) bool {
+// 	return value.Field(i).Kind() == reflect.Struct
+// }
