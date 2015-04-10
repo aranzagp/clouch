@@ -3,18 +3,19 @@ package mapify
 import (
 	"errors"
 	"reflect"
+
+	"github.com/thetonymaster/clouch/utils"
 )
 
 var (
-	ErrNotAStruct = errors.New("Unsupported. Not a struct")
-	clouch        = "clouch"
+	clouch = "clouch"
 )
 
 func Do(v interface{}) (map[string]interface{}, error) {
 	typ := reflect.TypeOf(v).Elem()
 
-	if !isStruct(typ) {
-		return nil, ErrNotAStruct
+	if !utils.IsStruct(typ) {
+		return nil, utils.ErrNotAStruct
 	}
 	// TODO: Validate we receive a pointer
 
@@ -29,7 +30,7 @@ func Do(v interface{}) (map[string]interface{}, error) {
 
 func getStructFields(value reflect.Value, level bool) (map[string]interface{}, error) {
 	if value.Kind() != reflect.Struct {
-		return nil, ErrNotAStruct
+		return nil, utils.ErrNotAStruct
 	}
 
 	res := map[string]interface{}{}
@@ -56,6 +57,7 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 
 		name := ""
 		tagField := tp.Tag.Get(clouch)
+<<<<<<< HEAD
 		tg := getTag(tagField)
 
 		if tagField != ",omitempty" {
@@ -64,6 +66,15 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 			} else {
 				name = tp.Name
 			}
+=======
+
+		tg := utils.GetTag(tagField)
+
+		if tagField != tg.Name {
+			name = tagField
+		} else {
+			name = tp.Name
+>>>>>>> upstream/master
 		}
 
 		if tg.Ignore() {

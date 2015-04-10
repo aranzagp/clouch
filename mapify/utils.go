@@ -1,22 +1,17 @@
 package mapify
 
 import (
-	"errors"
-	"fmt"
 	"reflect"
 	"strings"
-)
 
-var (
-	errNoID   = errors.New("No ID tag Found")
-	errNoRevs = errors.New("No Rev tag Found")
+	"github.com/thetonymaster/clouch/utils"
 )
 
 func idTagExists(typ reflect.Type) (int, error) {
 	for i := 0; i < typ.NumField(); i++ {
 		strTag := typ.Field(i).Tag.Get(clouch)
-		tg := getTag(strTag)
-		if tg.name == "_id" {
+		tg := utils.GetTag(strTag)
+		if tg.Name == "_id" {
 			return i, nil
 		}
 	}
@@ -31,14 +26,14 @@ func idTagExists(typ reflect.Type) (int, error) {
 
 	}
 
-	return 0, errNoID
+	return 0, utils.ErrNoID
 }
 
 func revTagExists(typ reflect.Type) (int, error) {
 	for i := 0; i < typ.NumField(); i++ {
 		strTag := typ.Field(i).Tag.Get(clouch)
-		tg := getTag(strTag)
-		if tg.name == "_revs" {
+		tg := utils.GetTag(strTag)
+		if tg.Name == "_revs" {
 			return i, nil
 		}
 	}
@@ -52,24 +47,14 @@ func revTagExists(typ reflect.Type) (int, error) {
 		}
 	}
 
-	return 0, errNoRevs
-}
-
-func isStruct(typ reflect.Type) bool {
-
-	if typ.Kind() != reflect.Struct {
-		fmt.Println(typ.Kind())
-		return false
-
-	}
-	return true
+	return 0, utils.ErrNoRevs
 }
 
 func GetID(v interface{}) (string, error) {
 	typ := reflect.TypeOf(v).Elem()
 
-	if !isStruct(typ) {
-		return "", ErrNotAStruct
+	if !utils.IsStruct(typ) {
+		return "", utils.ErrNotAStruct
 	}
 
 	num, err := idTagExists(typ)
