@@ -37,3 +37,31 @@ type TestF struct {
 	Revision []string `clouch:"_revs"`
 	Hello    string   `clouch:"hello"`
 }
+
+type TestG struct {
+	ID    string
+	Revs  []string
+	Hello string  `clouch:",omitempty"`
+	Num   int     `clouch:",omitempty"`
+	Num2  int     `clouch:",omitempty"`
+	Float float64 `clouch:",omitempty"`
+	Foo   string  `clouch:",omitempty"`
+}
+
+type TestH struct {
+	ID    string
+	Revs  []string
+	Bool  bool     `clouch:",omitempty"`
+	Slice []string `clouch:",omitempty"`
+}
+
+type TestI struct {
+	ID    string
+	Revs  []string
+	Hello string   `clouch:",omitempty"`
+	Num   int      `clouch:",omitempty"`
+	Float float64  `clouch:",omitempty"`
+	Bool  bool     `clouch:",omitempty"`
+	Slice []string `clouch:",omitempty"`
+	TestB *TestB   `clouch:",omitempty"`
+}

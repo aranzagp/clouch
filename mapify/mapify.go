@@ -2,6 +2,7 @@ package mapify
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 
 	"github.com/thetonymaster/clouch/utils"
@@ -57,16 +58,6 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 
 		name := ""
 		tagField := tp.Tag.Get(clouch)
-<<<<<<< HEAD
-		tg := getTag(tagField)
-
-		if tagField != ",omitempty" {
-			if tagField != tg.name {
-				name = tagField
-			} else {
-				name = tp.Name
-			}
-=======
 
 		tg := utils.GetTag(tagField)
 
@@ -74,72 +65,10 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 			name = tagField
 		} else {
 			name = tp.Name
->>>>>>> upstream/master
 		}
 
 		if tg.Ignore() {
 			continue
-		}
-
-		if tagField == ",omitempty" {
-			name = tp.Name
-			switch {
-
-			case isSlice(i, value):
-				if val.Len() != 0 {
-					res[name] = val.Interface()
-				}
-
-			case isString(i, value):
-				if val.String() != "" {
-					res[name] = val.Interface()
-				}
-
-			case isInt(i, value):
-				if val.Int() != 0 {
-					res[name] = val.Interface()
-				}
-
-			case isFloat(i, value):
-				if val.Float() != 0 {
-					res[name] = val.Float()
-				}
-
-			case isBool(i, value):
-				if val.Bool() {
-					res[name] = val.Bool()
-				}
-
-			case isPtr(i, value):
-				if p := val.Pointer(); p != 0 {
-					res[name] = val.Interface()
-				}
-
-			case val.Kind() == reflect.Struct:
-				r, err := getStructFields(val, false)
-				if err != nil {
-					return nil, err
-				}
-				res[name] = r
-				//continue
-			}
-
-		} else {
-
-			switch {
-			case isPtr(i, value) || isString(i, value) || isSlice(i, value):
-				res[name] = val.Interface()
-
-			case isFloat(i, value):
-				res[name] = val.Float()
-
-			case isInt(i, value):
-				res[name] = val.Int()
-
-			case isBool(i, value):
-				res[name] = val.Bool()
-			}
-
 		}
 
 		if revNum == i && level {
@@ -155,21 +84,87 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 			continue
 		}
 
-		// if tp.Type.Kind() == reflect.Ptr {
-		// 	if p := val.Pointer(); p == 0 {
-		//
-		// 		if tg.OmitEmpty() {
-		// 			continue
-		// 		}
-		//
-		// 		res[name] = nil
-		// 		continue
-		// 	}
-		//
-		// 	val = val.Elem()
-		// }
+		if isPtr(i, value) {
+			fmt.Println("ptr")
+			if p := val.Pointer(); p != 0 {
+				val = val.Elem()
+				if val.Kind() != reflect.Struct {
+					name = tp.Name
+					res[name] = val.Interface()
+				}
+			} else if p == 0 && tagField != ",omitempty" {
+				name = tp.Name
+				res[name] = nil
+			}
+		}
 
-		//res[name] = val.Interface()
+		if tagField == ",omitempty" {
+			name = tp.Name
+			fmt.Println(tp.Name)
+
+			switch {
+
+			case isSlice(i, value):
+				if val.Len() != 0 {
+					res[name] = val.Interface()
+				}
+
+			case isString(i, value):
+				if value.Field(i).String() != "" {
+					res[name] = val.Interface()
+				}
+
+			case isInt(i, value):
+				if value.Field(i).Int() != 0 {
+					res[name] = val.Interface()
+				}
+
+			case isFloat(i, value):
+				if value.Field(i).Float() != 0 {
+					res[name] = val.Float()
+				}
+
+			case isBool(i, value):
+
+				if value.Field(i).Bool() {
+					res[name] = val.Bool()
+				}
+
+			case val.Kind() == reflect.Struct:
+				fmt.Println("struct")
+				r, err := getStructFields(val, false)
+				if err != nil {
+					return nil, err
+				}
+				res[name] = r
+			}
+
+		} else {
+
+			switch {
+
+			case isString(i, value) || isSlice(i, value):
+				res[name] = val.Interface()
+
+			case isFloat(i, value):
+				res[name] = val.Float()
+
+			case isInt(i, value):
+				res[name] = val.Int()
+
+			case isBool(i, value):
+				res[name] = val.Bool()
+
+			case val.Kind() == reflect.Struct:
+				fmt.Println("struct")
+				r, err := getStructFields(val, false)
+				if err != nil {
+					return nil, err
+				}
+				res[name] = r
+			}
+
+		}
 
 	}
 

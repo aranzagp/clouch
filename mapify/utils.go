@@ -92,7 +92,3 @@ func isBool(i int, value reflect.Value) bool {
 func isMap(i int, value reflect.Value) bool {
 	return value.Field(i).Kind() == reflect.Map
 }
-
-// func isStruct(i int, value reflect.Value) bool {
-// 	return value.Field(i).Kind() == reflect.Struct
-// }

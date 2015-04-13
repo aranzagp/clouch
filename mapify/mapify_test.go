@@ -1,10 +1,8 @@
 package mapify_test
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 
 	. "github.com/thetonymaster/clouch/mapify"
 
@@ -31,16 +29,9 @@ var _ = Describe("Mapify", func() {
 				var world interface{} = "World"
 
 				Ω(testA).Should(HaveKeyWithValue("Hello", world))
-				//Ω(testA).ShouldNot(HaveKey("_rev"))
+				Ω(testA).ShouldNot(HaveKey("_rev"))
 				Ω(testA).ShouldNot(HaveKey("Revs"))
 				Ω(testA).ShouldNot(HaveKey("ID"))
-				log.Println(testA)
-
-				// b, err := json.Marshal(test)
-				// if err != nil {
-				// 	fmt.Println("error:", err)
-				// }
-				// os.Stdout.Write(b)
 
 			})
 		})
@@ -60,8 +51,6 @@ var _ = Describe("Mapify", func() {
 
 				Ω(testA).Should(HaveKeyWithValue("Hello", world))
 				Ω(testA).Should(HaveKeyWithValue("_rev", rev))
-				log.Println(testA)
-
 			})
 
 			Context("Test with a struct with pointer values", func() {
@@ -87,8 +76,6 @@ var _ = Describe("Mapify", func() {
 					Ω(testA).Should(HaveKeyWithValue("_rev", rev))
 					Ω(testA).Should(HaveKeyWithValue("Foo", foo))
 					Ω(testA).Should(HaveKeyWithValue("Num", num))
-					log.Println(testA)
-
 				})
 			})
 
@@ -113,8 +100,6 @@ var _ = Describe("Mapify", func() {
 					Ω(testA).Should(HaveKeyWithValue("Foo", foo))
 					Ω(testA).Should(HaveKey("Num"))
 					Ω(testA["Num"]).Should(BeNil())
-					log.Println(testA)
-
 				})
 			})
 
@@ -143,7 +128,6 @@ var _ = Describe("Mapify", func() {
 					Ω(test).Should(HaveKey("TestA"))
 					Ω(test["TestA"]).Should(HaveKeyWithValue("Revs", revs))
 					Ω(test["TestA"]).Should(HaveKeyWithValue("ID", id))
-					log.Println(test)
 
 				})
 			})
@@ -163,7 +147,7 @@ var _ = Describe("Mapify", func() {
 				It("Should return a nested map with correct values", func() {
 					test, err := Do(&testD)
 					Ω(err).Should(BeNil())
-
+					log.Println(test)
 					var revs interface{} = []string{"1234"}
 					var rev interface{} = "1234"
 					var id interface{} = "1"
@@ -173,7 +157,6 @@ var _ = Describe("Mapify", func() {
 					Ω(test).Should(HaveKey("TestA"))
 					Ω(test["TestA"]).Should(HaveKeyWithValue("Revs", revs))
 					Ω(test["TestA"]).Should(HaveKeyWithValue("ID", id))
-					log.Println(test)
 
 				})
 			})
@@ -211,7 +194,6 @@ var _ = Describe("Mapify", func() {
 					Ω(test["TestD"]).Should(HaveKeyWithValue("ID", id2))
 
 					Ω(test["TestD"]).Should(HaveKey("TestA"))
-					log.Println(test)
 
 				})
 
@@ -233,7 +215,7 @@ var _ = Describe("Mapify", func() {
 				Ω(test).Should(HaveKey("_rev"))
 				Ω(test).ShouldNot(HaveKey("DocID"))
 				Ω(test).ShouldNot(HaveKey("_id"))
-				log.Println(test)
+
 			})
 		})
 	})
@@ -250,8 +232,6 @@ var _ = Describe("Mapify", func() {
 
 				Ω(err).Should(BeNil())
 				Ω(id).Should(Equal(test.ID))
-				log.Println(id)
-
 			})
 		})
 
@@ -265,8 +245,6 @@ var _ = Describe("Mapify", func() {
 
 				Ω(err).Should(BeNil())
 				Ω(id).Should(Equal(test.DocID))
-				log.Println(id)
-
 			})
 		})
 	})
@@ -275,27 +253,33 @@ var _ = Describe("Mapify", func() {
 		Context("Skip cases with an empty string and zero int values", func() {
 			testG := ts.TestG{
 				ID:    "1",
-				Revs:  []string{"123"},
+				Revs:  []string{"1234"},
 				Hello: "",
 				Num:   0,
 				Num2:  1,
-				Float: 2.1,
+				Float: 0,
 				Foo:   "",
 			}
 
 			It("Should not return the Hello, Num and Float keys", func() {
-				test1, err := Do(&testG)
-				log.Println(len(test1))
+				log.Println(testG)
+
+				test, err := Do(&testG)
+				log.Println("Error1111!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+				log.Println(test)
 				Ω(err).Should(BeNil())
 
-				Ω(test1).ShouldNot(HaveKey("Hello"))
-				Ω(test1).ShouldNot(HaveKey("Num"))
-				//Ω(test1).Should(HaveKey("_rev"))
-				//Ω(test).Should(HaveKey("Num2"))
+				var rev interface{} = "1234"
 
-				//Ω(test).ShouldNot(HaveKey("Float"))
-				//Ω(test).ShouldNot(HaveKey(",omitempty"))
-				log.Println(test1)
+				Ω(test).Should(HaveKeyWithValue("_rev", rev))
+
+				Ω(test).ShouldNot(HaveKey("Hello"))
+				Ω(test).ShouldNot(HaveKey("Num"))
+				Ω(test).Should(HaveKey("_rev"))
+				Ω(test).Should(HaveKey("Num2"))
+
+				Ω(test).ShouldNot(HaveKey("Float"))
+				Ω(test).ShouldNot(HaveKey(",omitempty"))
 
 			})
 		})
@@ -316,46 +300,52 @@ var _ = Describe("Mapify", func() {
 				Ω(test).ShouldNot(HaveKey("Bool"))
 				Ω(test).ShouldNot(HaveKey("Slice"))
 				Ω(test).ShouldNot(HaveKey(",omitempty"))
-				b, err := json.Marshal(testH)
-				if err != nil {
-					fmt.Println("error:", err)
-				}
-				os.Stdout.Write(b)
-				//GinkgoWriter(b)
-				// fmt.Printf("%+v\n", testH)
-				// fmt.Println(test)
-				log.Println(test)
 
 			})
 		})
 
-		// Context("Cases with valid values", func() {
-		// 	testI := ts.TestI{
-		// 		ID:    "1",
-		// 		Revs:  []string{"123"},
-		// 		Hello: "World",
-		// 		// Num:   3,
-		// 		// Float: 3.3,
-		// 		// Bool:  true,
-		// 		//Slice: []string{},
-		// 	}
-		// 	It("Should retrurn all the keys", func() {
-		// 		test, err := Do(&testI)
-		// 		Ω(err).Should(BeNil())
-		//
-		// 		//var world interface{} = "World"
-		// 		// var num interface{} = 3
-		// 		// var float interface{} = 3.3
-		// 		// var boolVal interface{} = true
-		// 		//var sliceVal interface{} = {"gy", "hi", "12"}
-		//
-		// 		Ω(test).Should(HaveKey("Hello"))
-		// 		// Ω(test).Should(HaveKeyWithValue("Num", num))
-		// 		// Ω(test).Should(HaveKeyWithValue("Float", float))
-		// 		// Ω(test).Should(HaveKeyWithValue("Bool", boolVal))
-		//
-		// 	})
-		// })
+		Context("Cases with valid values", func() {
+			bar2 := "Bar"
+			num2 := 1
+			testB := ts.TestB{
+				ID:    "1",
+				Revs:  []string{"1234"},
+				Hello: "World",
+				Foo:   &bar2,
+				Num:   &num2,
+			}
+
+			testI := ts.TestI{
+				ID:    "1",
+				Revs:  []string{"123"},
+				Hello: "World",
+				Num:   3,
+				Float: 3.3,
+				Bool:  true,
+				Slice: []string{"1", "2"},
+				TestB: &testB,
+			}
+
+			It("Should retrurn all the keys", func() {
+				test, err := Do(&testI)
+				Ω(err).Should(BeNil())
+
+				var num interface{} = 3
+				var float interface{} = 3.3
+				var boolVal interface{} = true
+				var sliceVal interface{} = []string{"1", "2"}
+
+				Ω(test).Should(HaveKey("Hello"))
+				Ω(test).Should(HaveKeyWithValue("Num", num))
+				Ω(test).Should(HaveKeyWithValue("Float", float))
+				Ω(test).Should(HaveKeyWithValue("Bool", boolVal))
+				Ω(test).Should(HaveKeyWithValue("Slice", sliceVal))
+				Ω(test).Should(HaveKey("TestB"))
+				Ω(test["TestB"]).Should(HaveKeyWithValue("Foo", bar2))
+				Ω(test["TestB"]).Should(HaveKeyWithValue("Num", num2))
+
+			})
+		})
 	})
 
 })
