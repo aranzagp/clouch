@@ -14,7 +14,7 @@ var (
 
 const (
 	Ignore    = "-"
-	OmitEmpty = "omitempty"
+	OmitEmpty = ",omitempty"
 )
 
 func IsStruct(typ reflect.Type) bool {

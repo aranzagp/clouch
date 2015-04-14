@@ -22,6 +22,8 @@ func GetTag(tags string) *Tag {
 	tg := Tag{}
 
 	if len(fields) > 1 {
+		s := []string{",", fields[1]}
+		fields[1] = strings.Join(s, "")
 		tg.Option = fields[1]
 	}
 

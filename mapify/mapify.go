@@ -92,13 +92,13 @@ func getStructFields(value reflect.Value, level bool) (map[string]interface{}, e
 					name = tp.Name
 					res[name] = val.Interface()
 				}
-			} else if p == 0 && tagField != ",omitempty" {
+			} else if p == 0 && !tg.OmitEmpty() {
 				name = tp.Name
 				res[name] = nil
 			}
 		}
 
-		if tagField == ",omitempty" {
+		if tg.OmitEmpty() {
 			name = tp.Name
 			fmt.Println(tp.Name)
 
