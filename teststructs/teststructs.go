@@ -65,3 +65,9 @@ type TestI struct {
 	Slice []string `clouch:",omitempty"`
 	TestB *TestB   `clouch:",omitempty"`
 }
+
+type TestJ struct {
+	ID    string
+	Revs  []string
+	Hello string `clouch:"-"`
+}

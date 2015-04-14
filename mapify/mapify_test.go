@@ -346,6 +346,27 @@ var _ = Describe("Mapify", func() {
 
 			})
 		})
+
+		Context("Skip cases with the ignore tag", func() {
+			testJ := ts.TestJ{
+				ID:    "1",
+				Revs:  []string{"1234"},
+				Hello: "World",
+			}
+
+			It("Should not return the Hello, Num and Float keys", func() {
+				test1, err := Do(&testJ)
+				log.Println(len(test1))
+				Ω(err).Should(BeNil())
+
+				var rev interface{} = "1234"
+
+				Ω(test1).Should(HaveKeyWithValue("_rev", rev))
+
+				Ω(test1).ShouldNot(HaveKey("Hello"))
+
+			})
+		})
 	})
 
 })

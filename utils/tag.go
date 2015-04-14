@@ -26,6 +26,9 @@ func GetTag(tags string) *Tag {
 		fields[1] = strings.Join(s, "")
 		tg.Option = fields[1]
 	}
+	if fields[0] == "-" {
+		tg.Option = fields[0]
+	}
 
 	tg.Name = fields[0]
 
