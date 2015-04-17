@@ -22,11 +22,11 @@ func GetTag(tags string) *Tag {
 	tg := Tag{}
 
 	if len(fields) > 1 {
-		s := []string{",", fields[1]}
-		fields[1] = strings.Join(s, "")
+		//	s := []string{",", fields[1]}
+		//	fields[1] = strings.Join(s, "")
 		tg.Option = fields[1]
 	}
-	if fields[0] == "-" {
+	if fields[0] == Ignore {
 		tg.Option = fields[0]
 	}
 
